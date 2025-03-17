@@ -1,20 +1,40 @@
-import dynamic from "next/dynamic"
+"use client";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 
+// Dynamically import the Monaco Editor to avoid SSR issues.
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-const MonacoEditor = dynamic(() => import('react-monaco-editor'), { ssr: false })
+export default function Editor() {
+  const [code, setCode] = useState("// Write your code here");
 
-export default function Editor(){
-    const editorDidMount = (editor, monaco) => {
-        console.log('Editor mounted')
-      }
-    return(
-        <MonacoEditor
-        width="800"
-        height="600"
+  const handleEditorChange = (value) => {
+    setCode(value);
+  };
+
+  const editorDidMount = (editor, monaco) => {
+    console.log("Editor mounted", editor);
+  };
+
+  return (
+    <div className="w-full flex justify-center">
+      <MonacoEditor
+        width="80%"
+        height="600px"
         language="javascript"
         theme="vs-dark"
-        value="// Write your code here"
-        editorDidMount={editorDidMount}
+        value={code}
+        options={{
+          automaticLayout: true,
+          glyphMargin: true,
+          folding: true,
+          lineNumbers: "on",
+          scrollBeyondLastLine: false,
+          minimap: { enabled: false },
+        }}
+        onChange={handleEditorChange}
+        onMount={editorDidMount}
       />
-    )
+    </div>
+  );
 }
